@@ -225,7 +225,7 @@ def update_dependabot_secret(token, target_repository, secret_name, secret_value
             "encrypted_value": encrypt(key, secret_value),
             "key_id": key_id
         }
-        response = requests.patch(url, headers=headers, data=json.dumps(data))
+        response = requests.put(url, headers=headers, data=json.dumps(data))
         print(f"Response Code: {response.status_code}")
         if response.status_code == 204:
             print(f"dependabot Secret \"{secret_name}\" updated in {repo_name}")
