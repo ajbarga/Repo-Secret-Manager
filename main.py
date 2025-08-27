@@ -206,10 +206,6 @@ def add_dependabot_secret(token, target_repository, secret_name, secret_value, r
         print(f"dependabot Secret \"{secret_name}\" already exists in {repo_name}")
 
 def update_dependabot_secret(token, target_repository, secret_name, secret_value, repoOwner):
-    """Update a dependabot secret by delete (if exists) then PUT (create/update).
-
-    Ensures a value change actually propagates even if GitHub returns 204 for an unchanged value.
-    """
     repo_name = target_repository.name
     repo_owner = repoOwner
     headers = {
@@ -217,22 +213,6 @@ def update_dependabot_secret(token, target_repository, secret_name, secret_value
         'Accept': 'application/vnd.github+json'
     }
 
-    # # List existing secrets
-    # list_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/dependabot/secrets"
-    # list_resp = requests.get(list_url, headers=headers)
-    # try:
-    #     existing = flatten_secrets_dict(list_resp.json().get("secrets", []))
-    # except Exception:
-    #     existing = []
-
-    # # if secret_name in existing:
-    # #     del_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/dependabot/secrets/{secret_name}"
-    # #     del_resp = requests.delete(del_url, headers=headers)
-    # #     print(f"Delete (before update) Response Code: {del_resp.status_code}")
-    # #     if del_resp.status_code not in (204, 404):
-    # #         print(f"Warning: delete attempt returned status {del_resp.status_code}; continuing")
-
-    # Always PUT new value
     key_id, key = get_repo_public_key(token, repo_owner, repo_name)
     put_url = f"https://api.github.com/repos/{repo_owner}/{repo_name}/dependabot/secrets/{secret_name}"
     encrypted_value = encrypt(key, secret_value)
